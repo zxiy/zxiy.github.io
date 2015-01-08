@@ -78,6 +78,17 @@
 <h3 id="练习_1-6">练习 1.6</h3>
 <p>12页中间位置说，执行<code>if</code>时，解释器从<code>&lt;predicate&gt;</code>开始，如果<code>&lt;predicate&gt;</code>得到真就去求<code>&lt;consequent&gt;</code>，否则去求<code>&lt;alternative&gt;</code>。</p>
 <p>而<code>new-if</code>是一个普通函数，在传入参数的时候，根据应用序执行顺序，会先对参数进行求值，于是就会出现递归过深的情况，从而爆栈。</p>
+<p>//update 7, Jan, 2015</p>
+<h3 id="练习_1-7">练习 1.7</h3>
+<p>很显然，比如我要给0.0001开平方，用原文的<code>good-enough?</code>函数来判断，只要结果在0到0.0001的10倍之间都是“足够好的”这显然是不够的。</p>
+<p>而大一些的浮点数，因为其有效数字位数是有限的，很有可能其无法取到0.001的精度，于是进入死循环。</p>
+<p>改进版的<code>good-enough?</code>如下：</p>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="list">(<span class="title">define</span> <span class="list">(<span class="title">good-enough?</span> guess x)</span></span></div><div class="line">    <span class="list">(<span class="title"><span class="built_in">&gt;</span></span><span class="number"> 0.001</span></span></div><div class="line">       <span class="list">(<span class="title"><span class="built_in">/</span></span> <span class="list">(<span class="title">abs</span> <span class="list">(<span class="title"><span class="built_in">-</span></span> x guess)</span>)</span></span></div><div class="line">          guess)))</div></pre></td></tr></table></figure>
+
+<p>//update 8,Jan, 2015</p>
+<h3 id="练习1-8">练习1.8</h3>
+<figure class="highlight scheme"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">&gt; (define (improve guess x)</span></span></div><div class="line">    (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))</div><div class="line">&gt; (define (cube x) (* x x x))</div><div class="line"><span class="input"><span class="prompt">&gt; (define (good-enough? guess x)</span></span></div><div class="line">    (&lt; (abs (- (cube guess) x)) 0.001))</div><div class="line">&gt; (define (cube-root-iter guess x)</div><div class="line">    (<span class="keyword">if</span> (good-enough? guess x)</div><div class="line">        guess</div><div class="line">        (cube-root-iter (improve guess x) x)))</div><div class="line"><span class="input"><span class="prompt">&gt; (define (cube-root x)</span></span></div><div class="line">    (cube-root-iter 1.0 x))</div><div class="line">&gt; (cube-root <span class="number">8</span>)</div><div class="line"><span class="input"><span class="prompt">2.000004911675504</span></span></div><div class="line">&gt; (cube-root <span class="number">27</span>)</div><div class="line"><span class="input"><span class="prompt">3.0000005410641766</span></span></div><div class="line">&gt; (cube-root <span class="number">0</span>.<span class="number">001</span>)</div><div class="line"><span class="number">0</span>.<span class="number">11177331656703803</span></div><div class="line">&gt;</div></pre></td></tr></table></figure>
+
 
     
     
