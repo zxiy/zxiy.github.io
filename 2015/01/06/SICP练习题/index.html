@@ -54,7 +54,7 @@
   </header>
   <div class="entry-content">
     
-      <p>准备花2个月时间把SICP啃完，我会把课后的练习题写在这里。</p>
+      <p>准备花2个月时间把SICP至少前三章啃完，我会把课后的练习题写在这里。</p>
 <a id="more"></a>
 
 <h2 id="Chapter_1">Chapter 1</h2>
@@ -88,6 +88,14 @@
 <p>//update 8,Jan, 2015</p>
 <h3 id="练习1-8">练习1.8</h3>
 <figure class="highlight scheme"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">&gt; (define (improve guess x)</span></span></div><div class="line">    (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))</div><div class="line">&gt; (define (cube x) (* x x x))</div><div class="line"><span class="input"><span class="prompt">&gt; (define (good-enough? guess x)</span></span></div><div class="line">    (&lt; (abs (- (cube guess) x)) 0.001))</div><div class="line">&gt; (define (cube-root-iter guess x)</div><div class="line">    (<span class="keyword">if</span> (good-enough? guess x)</div><div class="line">        guess</div><div class="line">        (cube-root-iter (improve guess x) x)))</div><div class="line"><span class="input"><span class="prompt">&gt; (define (cube-root x)</span></span></div><div class="line">    (cube-root-iter 1.0 x))</div><div class="line">&gt; (cube-root <span class="number">8</span>)</div><div class="line"><span class="input"><span class="prompt">2.000004911675504</span></span></div><div class="line">&gt; (cube-root <span class="number">27</span>)</div><div class="line"><span class="input"><span class="prompt">3.0000005410641766</span></span></div><div class="line">&gt; (cube-root <span class="number">0</span>.<span class="number">001</span>)</div><div class="line"><span class="number">0</span>.<span class="number">11177331656703803</span></div><div class="line">&gt;</div></pre></td></tr></table></figure>
+
+<p>//update 8,Jan, 2015</p>
+<h3 id="练习1-9">练习1.9</h3>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="list">(<span class="title">+</span> <span class="number">4</span> <span class="number">5</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">+</span> <span class="number">3</span> <span class="number">5</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">+</span> <span class="number">2</span> <span class="number">5</span>)</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">+</span> <span class="number">1</span> <span class="number">5</span>)</span>)</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">+</span> <span class="number">0</span> <span class="number">5</span>)</span>)</span>)</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="number">5</span>)</span>)</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="number">6</span>)</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="list">(<span class="title">inc</span> <span class="number">7</span>)</span>)</span></div><div class="line"><span class="list">(<span class="title">inc</span> <span class="number">8</span>)</span></div><div class="line"><span class="number">9</span></div></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="list">(<span class="title">+</span> <span class="number">4</span> <span class="number">5</span>)</span></div><div class="line"><span class="list">(<span class="title">+</span> <span class="number">3</span> <span class="number">6</span>)</span></div><div class="line"><span class="list">(<span class="title">+</span> <span class="number">2</span> <span class="number">7</span>)</span></div><div class="line"><span class="list">(<span class="title">+</span> <span class="number">1</span> <span class="number">8</span>)</span></div><div class="line"><span class="list">(<span class="title">+</span> <span class="number">0</span> <span class="number">9</span>)</span></div><div class="line"><span class="number">9</span></div></pre></td></tr></table></figure>
 
 
     
@@ -138,5 +146,23 @@
   <canvas></canvas>
 </div>
 <script src="/js/phasebeam.js"></script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    }); 
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
 </body>
 </html>
