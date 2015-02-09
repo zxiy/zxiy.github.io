@@ -1,0 +1,321 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>48 小时编写 Scheme 解释器 | ZhangXiuyu.me</title>
+  <meta name="author" content="Zhang Xiuyu">
+
+  
+  <meta name="description" content="笔记 思考 总结">
+  
+  
+
+  <link rel="alternate" href="/atom.xml" title="ZhangXiuyu.me" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
+  
+</head>
+
+<body>
+  <header id="header" class="inner"><nav>
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+</nav></header>
+  <div id="content" class="inner"><article class="post">
+  
+    <div class="gallery">
+  <div class="photoset">
+    
+      <img src="">
+    
+  </div>
+  <div class="control">
+    <div class="prev"></div>
+    <div class="next"></div>
+  </div>
+</div>
+  
+  <header>
+    
+  
+    <h1 class="title">48 小时编写 Scheme 解释器</h1>
+  
+
+    <time datetime="2015-02-09T02:09:49.000Z">
+  <span class="day">9</span><span class="month">2月</span>
+</time>
+  </header>
+  <div class="entry-content">
+    
+      
+        <div id="toc" class="toc-article">
+	<strong class="toc-title">文章目录</strong>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总览"><span class="toc-number">1.</span> <span class="toc-text">总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一章_-_第一步：_编译和运行"><span class="toc-number">2.</span> <span class="toc-text">第一章 - 第一步： 编译和运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#练习"><span class="toc-number">2.1.</span> <span class="toc-text">练习</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二章_-_语法分析"><span class="toc-number">3.</span> <span class="toc-text">第二章 - 语法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#写一个简单的语法分析器"><span class="toc-number">3.1.</span> <span class="toc-text">写一个简单的语法分析器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空白符"><span class="toc-number">3.2.</span> <span class="toc-text">空白符</span></a></li></ol></li></ol>
+  </div>
+    
+      <p>副标题： 通过一个实例介绍 Haskell<br>原作者： Jonathan Tang<br>原链接： <a href="http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours" target="_blank" rel="external">http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours</a></p>
+<h2 id="总览">总览</h2>
+<p>网上的大部分 Haskell 教程看起来像一个语言手册，他们展示了一些语法，一些语言结构，然后让你在命令行中构造一些简单的函数。而困难的部分——如何写一个功能齐全的、有用的程序则放到了最后，又是甚至完全略去。</p>
+<p>本教程另辟蹊径，你会从命令行参数和解析开始，发展到写一个 <a href="http://www.schemers.org/Documents/Standards/R5RS/HTML/" target="_blank" rel="external">R5RS 标准</a>大型子集的 Scheme 解释器。一路走来，你会学习 Haskell 的 I/O 、可变状态、动态类型、错误处理和解析功能。在完成的时候，你应该对 Haskell 和 Scheme 都会非常熟练。</p>
+<p>本教程主要有两类受众：</p>
+<ul>
+<li>已经学会 Lisp 或 Scheme 的人，并想要学 Haskell。</li>
+<li>不会这两种语言，但有特定背景并熟悉计算机的人。</li>
+</ul>
+<p>第二类读者可能会感觉到其挑战性，因为我隐藏了一些 Scheme 和更普遍的程序上的概念，并保持专注于 Haskell 。在这里一个好的教材比如<a href="http://mitpress.mit.edu/sicp/full-text/book/book.html" target="_blank" rel="external">《计算机程序的构造和解释 (Structure and Interpretation of Computer Programs)》</a>或者<a href="http://www.ccs.neu.edu/home/matthias/BTLS/" target="_blank" rel="external">《The Little Schemer》</a>会给你很大的帮助。</p>
+<p>使用命令式或面向对象语言，比如 C、Java 或者 Python 的人应该当心，因为你需要忘掉大部分你已经知道的有关编程的事情。Haskell 完全不同于那些语言，他需要不同的编程思维方式。你最好让自己像一张白纸一样投入本篇教程，不要用 Haskell 和其他命令式语言比较。因为他们的一些概念（比如类，函数，”return”）在 Haskell 中有明显不同的含义。</p>
+<p>因为每一章节都以前面章节的内容为基础，所以最好按顺序来学习每个章节。</p>
+<p>本教程假定你会使用 <a href="https://www.haskell.org/ghc/" target="_blank" rel="external">GHC</a> 作为你的 Haskell 编译器。它可能可以在 <a href="https://www.haskell.org/hugs/" target="_blank" rel="external">HUGS</a> 等其他编译器上工作，但是并没有被测试过，你（如果用其他编译器）可能需要下载其他额外的库。</p>
+<a id="more"></a>
+
+<h2 id="第一章_-_第一步：_编译和运行">第一章 - 第一步： 编译和运行</h2>
+<p>首先，你需要安装 GHC ，在 Linux 上，他常常被预装或可以通过 apt-get 或 yum 获取。他也可以在 <a href="http://www.haskell.org/ghc/" target="_blank" rel="external">http://www.haskell.org/ghc/</a> 下载。除非你知道你在做什么，否则最好是直接下载编译好的安装包。它和其他软件包一样安装和下载。这个教程在Linux中开发，但只要你会使用Dos命令，他的一切和在 Windows 上是一样的。</p>
+<p>对于 Unix 用户（或者 Windows Emacs）这里有一个不错的 Emacs 模式（原文链接已失效），包括语法高亮和自动缩进。Windows 用户可以使用记事本和其他文本编辑器， Haskell 语法对记事本是友好的，虽然你需要小心缩进。Eclipse 用户可能需要使用 <a href="http://eclipsefp.github.io/" target="_blank" rel="external">Haskell 插件</a>。最后也有使用 GHC 编译器的 VS 插件（原文链接已失效）。</p>
+<p>现在，是时候来写第一个 Haskell 程序了。这个程序会从命令行里面读取一个名字并输出对其的问候。创建一个以<code>.hs</code>结尾的文件并输出以下文本：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="module"><span class="keyword">module</span> Main <span class="keyword">where</span></span></div><div class="line"><span class="import"><span class="keyword">import</span> System.Environment</span></div><div class="line"></div><div class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</div><div class="line"><span class="title">main</span> = <span class="keyword">do</span> args &lt;- getArgs</div><div class="line">          putStrLn(<span class="string">"Hello, "</span> ++ args !! <span class="number">0</span>)</div></pre></td></tr></table></figure>
+
+<p>让我们来看一下这段代码，前两行代码指定一个名叫<code>Main</code>的 module 被包括在<code>System</code> module 中。每个 Haskell 程序由<code>Main</code> module 中的一个叫<code>main</code>的 action 开始。该 module 可以导入其他 module，但它必须已经存在并可以被编译器生成为可执行文件。Haskell 是大小写敏感的， module 名必须大写，而声明必须小写。</p>
+<p><code>main :: IO ()</code>这一行是一个类型声明，表示 action <code>main</code>有类型<code>IO()</code>。类型声明在 Haskell 中是一个可选项，编译器会把他们自动判断出来，并且只在和你指定的不一致时才报告出来。为了清楚起见，在本教程中，我会明确的定义所有类型声明。如果你在家进行这项操作，你可能需要忽略它，因为我们很少在构建的时候修改它。（这一句感觉翻译的不对，原文是 If you’re following along at home, you may want to omit them, because it’s less to change as we build our program.）</p>
+<p><code>IO</code>是一个叫做 monad 的东西的实例，这是一个不可怕的概念的可怕名字。大体上，一个 monad 是一种说“一个额外的信息附加到这个值，大部分函数不需要去担心了”的方式。在这个例子中，“额外信息”就是 action 执行<code>IO</code>，并且没有初值传递，表示为<code>()</code>。Monadic 值经常被称为 action，因为最简单理解 monad 的方式是想象成一系列连续的影响外面世界的 action。（此段也不对劲，因为到翻译时本人完全不懂范畴论）</p>
+<p>Haskell 是一种声明式的语言，而不是给计算机一系列要执行的指令。你给它了告诉它怎样执行每一个函数时它可能需要的定义的集合。这些定义使用各种函数和 action 的组合。由编译器确定一个把所有东西都放在一起的执行路径。</p>
+<p>如果要写一个这样的定义，你可以将它设为一个方程，在等号左边定义一个名字和（可选的）一个或多个模式（稍后解释）来绑定变量。在等号右边告诉计算机遇到这个名字的时候要做什么。这个方程就像普通的代数方程一样，在程序中你总是可以用等号右边的内容替换等号左边的内容，他们是等价的。这叫做“引用透明性”，这个属性是 Haskell 比其他语言明显更容易的原因。</p>
+<p>我们如何定义我们的<code>main</code> action 呢？我们知道它必须是一个<code>IO</code> action ，而且我们希望它读取命令行参数并打印一些输出，我们有两种方法来创建一个<code>IO</code> action：</p>
+<ul>
+<li>使用<code>return</code>函数来”提升”一个普通的值到<code>IO</code> monad 里。</li>
+<li>合并两个现有<code>IO</code> action。</li>
+</ul>
+<p>因为我们要做两件事，所以我们会采用第二种方法，内建 action <code>getArgs</code>来读取命令行参数并储存在一个 List 里面，内建函数<code>putStrLn</code>获得 List 的第一个字符串并写入到控制台里面。</p>
+<p>为了混合他们，我们使用一个 do 块，一个 do 块可以包含数行代码，全都对准<code>do</code>后面的第一个非空字符，每一行可以是以下两种形式之一：</p>
+<ul>
+<li><code>name &lt;- action</code></li>
+<li><code>action</code></li>
+</ul>
+<p>第一种形式会把 action 的结果绑定到 name 上。比如，如果 action 的类型是<code>IO[String]</code>（一个<code>IO</code> action 返回一个 String 的 List，比如<code>getArgs</code>）， name会被绑定在返回的 String List 上。第二种形式是执行 action， 通过<code>&gt;&gt;</code>操作符(读作绑定)按顺序排在前一行的后面。这个运算符对于每个 monad 具有不同的意义，在 <code>IO</code> monad，他无论产生什么样的外部副作用结果都会按顺序执行操作。因为这个组合的语义取决于被使用的特定单子，你不能在同一个 do 块中混合使用不同的 monad 的 action。</p>
+<p>当然，这些 action 本身就是函数或者复杂表达式的结果。在这个例子中，我们首先获取 List 的第0号元素（代码<code>args !! 0</code>），并将其拼接到字符串<code>&quot;hello, &quot;</code>的后面（代码<code>&quot;hello, &quot; ++</code>），并最终将其传递给<code>putStrLn</code>到 IO 序列中。在 Haskell 中字符串是字符的 List，所以你可以对其使用任何 List 的函数和操作符。所有标准的操作符和其优先级如下列表：</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>优先级</th>
+<th>关联性</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>9</td>
+<td>右</td>
+<td>符合函数</td>
+</tr>
+<tr>
+<td><code>!!</code></td>
+<td>9</td>
+<td>左</td>
+<td>List 索引</td>
+</tr>
+<tr>
+<td><code>^</code>，<code>^^</code>，<code>**</code></td>
+<td>8</td>
+<td>右</td>
+<td>幂运算，分别对应整数、分数和浮点数</td>
+</tr>
+<tr>
+<td><code>*</code>，<code>/</code></td>
+<td>7</td>
+<td>左</td>
+<td>乘，除</td>
+</tr>
+<tr>
+<td><code>+</code>，<code>-</code></td>
+<td>6</td>
+<td>左</td>
+<td>加，减</td>
+</tr>
+<tr>
+<td><code>:</code></td>
+<td>5</td>
+<td>右</td>
+<td>Cons(??)(List 构造)</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>5</td>
+<td>右</td>
+<td>列表连接</td>
+</tr>
+<tr>
+<td><code>elem</code>，<code>notElem</code></td>
+<td>4</td>
+<td>左</td>
+<td>列表成员身份</td>
+</tr>
+<tr>
+<td><code>==</code>，<code>/=</code>，<code>&lt;</code>，<code>&lt;=</code>，<code>&gt;=</code>，<code>&gt;</code></td>
+<td>4</td>
+<td>左</td>
+<td>相等，不等，小于，小于等于，大于等于，大于</td>
+</tr>
+<tr>
+<td><code>&amp;&amp;</code></td>
+<td>3</td>
+<td>右</td>
+<td>逻辑且</td>
+</tr>
+<tr>
+<td><code>┃┃</code></td>
+<td>2</td>
+<td>右</td>
+<td>逻辑或</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code>，<code>&gt;&gt;=</code></td>
+<td>1</td>
+<td>左</td>
+<td>Monadic 绑定，Monadic 绑定（通过管线传递值给下个函数）</td>
+</tr>
+<tr>
+<td><code>=&lt;&lt;</code></td>
+<td>1</td>
+<td>右</td>
+<td>反转Monadic 绑定（和上面相同，但是参数反转）</td>
+</tr>
+<tr>
+<td><code>$</code></td>
+<td>0</td>
+<td>右</td>
+<td>嵌入函数应用程序（和f x类似，但是是右关联而不是左关联）</td>
+</tr>
+</tbody>
+</table>
+<p>要编译并运行这个程序，请尝试这样做：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="literal">user</span>&gt;&gt;ghc −o hello_you hello.hs</div><div class="line"><span class="literal">user</span>&gt;&gt;./hello_you Jonathan</div><div class="line">  Hello ,Jonathan</div></pre></td></tr></table></figure>
+
+<p><code>-o</code>选项可以选择你要创建的可执行文件的文件名，然后你只需要指定 Haskell 源代码文件的名字。</p>
+<h3 id="练习">练习</h3>
+<ol>
+<li>修改这个程序，让它从命令行读取两个参数，并使用这两个参数打印一条消息。</li>
+<li>修改这个程序，让它对从命令行读取的两个参数做简单算数运算，并打印结果。你可以使用<code>read</code>把一个字符串转换成一个数字，并使用<code>show</code>把数字转换回字符串。使用不同的运算符来分别尝试。</li>
+<li><code>getLine</code>是一个从控制台读取一行并转换成字符串的<code>IO</code> action，请修改这个程序，让它提示输入一个名字，读取这个名字，然后打印他。</li>
+</ol>
+<h2 id="第二章_-_语法分析">第二章 - 语法分析</h2>
+<h3 id="写一个简单的语法分析器">写一个简单的语法分析器</h3>
+<p>现在，让我们试着写一个非常简单的语法分析器。我们会使用 <a href="https://hackage.haskell.org/package/parsec" target="_blank" rel="external">Parsec</a> 库，GHC 中已经附带，但是如果你使用其他编译器，可能需要单独下载。</p>
+<p>从增加这一行代码到 import 部分开始</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="import"><span class="keyword">import</span> Text.ParserCombinators.Parsec <span class="keyword">hiding</span> <span class="container">(<span class="title">spaces</span>)</span></span></div></pre></td></tr></table></figure>
+
+<p>这会使我们可以使用 Parsec 库，除了会和我们稍后定义的函数名冲突的 spaces 函数。</p>
+<p>现在我们定义一个能识别出一个 Scheme 允许的标识符的符号的语法解析器。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">symbol :: Parser Char</div><div class="line"><span class="variable">symbol =</span> oneOf <span class="string">"!$%&|*+-/:&lt;=?&gt;@^_~#"</span></div></pre></td></tr></table></figure>
+
+<p>这是另一个 monad 的例子，在这种情况下，被隐藏的“额外信息”是输入流，回溯记录、第一个和之后的集合等等所有有关位置的信息。Parsec 帮我们照顾了这一切。我们只需要使用 Parsec 库函数 <code>oneOf</code>，然后他就会识别出我们传递给它的字符串中的任意一个字符。Parsec 提供了大量的预先编译语法分析器。比如说<code>letter</code>和<code>digit</code>都是库函数。（注：原文的链接已经失效，这3个函数可以在<a href="https://hackage.haskell.org/package/parsec-3.1.8/docs/Text-Parsec-Char.html" target="_blank" rel="external">https://hackage.haskell.org/package/parsec-3.1.8/docs/Text-Parsec-Char.html</a> 中看到)就像你即将看到的一样，你可以用低级的语法分析器写出更复杂的产品。让我们定义一个函数来调用我们的语法分析器，并处理任何见到的错误：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">readExpr :: String -&gt;</span> <span class="constant">String</span></span></div><div class="line">readExpr input = <span class="keyword">case</span> parse symbol <span class="string">"lisp"</span> input of</div><div class="line"><span class="input"><span class="prompt">	Left err -&gt;</span> <span class="string">"No match: "</span> ++ show err</span></div><div class="line"><span class="input"><span class="prompt">	Right val -&gt;</span> <span class="string">"Found value"</span></span></div></pre></td></tr></table></figure>
+
+<p>你可以从类型签名中看到，<code>readExpr</code>是一个将一个字符串转换成另一个字符串的函数（<code>-&gt;</code>定义）。我们给参数命名为<code>input</code>，并传递我们上面定义的<code>symbol</code> action 和语法分析器的名字(<code>list</code>)给 Parsec 的函数<code>parse</code>。</p>
+<p><code>parse</code>可以返回被解析出来的值或者错误，所以我们需要处理错误的情况。根据典型的 Haskell 约定，Parsec 返回一个任意数据类型，使用左构造器(<code>Left</code>)来表示错误，使用右构造器来表示正常的值。</p>
+<p>我们使用一个<code>case ... of</code>结构来匹配<code>parse</code>的二选一结果。如果我们得到一个<code>Left</code>值，我们就绑定这个错误给<code>err</code>然后和<code>&quot;No match&quot;</code>一起返回这个错误的字符串表示形式。如果我们得到一个<code>Right</code>值，我们把它绑定给<code>val</code>，忽略它，然后返回字符串<code>&quot;Found value&quot;</code>。</p>
+<p><code>case ... of</code>是一个模式匹配的例子，我们迟一些的时候可以看到它的更多细节。</p>
+<p>最后，我们需要改变我们的<code>main</code>函数来调用<code>readExpr</code>并打印出结果：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">main :: IO ()</div><div class="line">main = <span class="keyword">do</span> args &lt;- getArgs</div><div class="line">          putStrLn(<span class="built_in">read</span>Expr(args !! <span class="number">0</span>))</div></pre></td></tr></table></figure>
+
+<p>这一小节的完整代码：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="module"><span class="keyword">module</span> Main <span class="keyword">where</span></span></div><div class="line"><span class="import"><span class="keyword">import</span> System.Environment</span></div><div class="line"><span class="import"><span class="keyword">import</span> Text.ParserCombinators.Parsec <span class="keyword">hiding</span> <span class="container">(<span class="title">spaces</span>)</span></span></div><div class="line"></div><div class="line"><span class="title">main</span> :: <span class="type">IO</span> ()</div><div class="line"><span class="title">main</span> = <span class="keyword">do</span> args &lt;- getArgs</div><div class="line">          putStrLn(readExpr(args !! <span class="number">0</span>))</div><div class="line"></div><div class="line"><span class="title">symbol</span> :: <span class="type">Parser</span> <span class="type">Char</span></div><div class="line"><span class="title">symbol</span> = oneOf <span class="string">"!$%&|*+-/:&lt;=?&gt;@^_~#"</span></div><div class="line"></div><div class="line"><span class="title">readExpr</span> :: <span class="type">String</span> -&gt; <span class="type">String</span></div><div class="line"><span class="title">readExpr</span> input = <span class="keyword">case</span> parse symbol <span class="string">"lisp"</span> input <span class="keyword">of</span></div><div class="line">	<span class="type">Left</span> err -&gt; <span class="string">"No match: "</span> ++ show err</div><div class="line">	<span class="type">Right</span> val -&gt; <span class="string">"Found value"</span></div></pre></td></tr></table></figure>
+
+<p>你需要在控制台中加入编译选项<code>-package parsec</code>，否则会出现链接错误。例子如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ghc -package parsec simpleparser1.hs</span></div><div class="line"><span class="input"><span class="prompt">Linking simpleparser1.exe ...</span></span></div><div class="line">user&gt;&gt; .\simpleparser1.exe <span class="variable">$</span></div><div class="line"><span class="constant">Found</span> value</div><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> .\simpleparser1.exe a</span></div><div class="line"><span class="constant">No</span> <span class="symbol">match:</span> <span class="string">"lisp"</span> (line <span class="number">1</span>, column <span class="number">1</span>)<span class="symbol">:</span></div><div class="line">unexpected <span class="string">"a"</span></div></pre></td></tr></table></figure>
+
+<h3 id="空白符">空白符</h3>
+<p>接下来，我们将通过添加一系列的改进来让语法分析器能识别更复杂的表达式。如果我们的符号前面有空格当前的语法解析器会卡住:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ./simpleparser1.exe <span class="string">" %"</span></span></div><div class="line"><span class="constant">No</span> match <span class="symbol">:</span> <span class="string">"lisp"</span> (line1, column <span class="number">1</span>)<span class="symbol">:</span></div><div class="line">unexpected <span class="string">" "</span></div></pre></td></tr></table></figure>
+
+<p>让我们来修改他以让他忽略空白字符。</p>
+<p>首先，让我们定义一个识别出任意数量空白字符的解析器。顺便说一下，这就是我们上面代码中写<code>Parsec hiding (spaces)</code>的原因：已经有一个spaces函数在Parsec库里面了，但是它做的并不是我们要做的事情。（而且有另一个文本解析器叫做Lexeme做了我们想做的事情，但是为了教学目的我们忽略它。）</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">spaces :: Parser ()</span></div><div class="line">spaces =<span class="string"> skipMany1 space</span></div></pre></td></tr></table></figure>
+
+<p>正如函数可以传递给函数一样， action 也可以。我们这里传递 action <code>space</code>给 action <code>skipMany1</code>，来获得一个识别出1个或多个空白符的Parser。</p>
+<p>下面让我们来修改我们的解析函数，使其可以这个新的解析器。修改<code>case parse</code>后面和<code>&quot;lisp&quot;</code>之前的部分：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">readExpr input = <span class="keyword">case</span> parse (spaces <span class="input">&gt;&gt; symbol) <span class="string">"lisp"</span> input of</span></div><div class="line"><span class="input"><span class="prompt">	Left err -&gt;</span> <span class="string">"No match: "</span> ++ show err</span></div><div class="line"><span class="input"><span class="prompt">	Right val -&gt;</span> <span class="string">"Found value"</span></span></div></pre></td></tr></table></figure>
+
+<p>我们之前在第二课接触过了<code>&gt;&gt;</code>(绑定)操作符，在那里我们提到它用来在膜厚回合两行<code>do</code>块。这里，我们使用它显示的结合我们空格和符号的解析器。然后，绑定操作在<code>Parser</code> monad 和<code>IO</code> monad 中有完全不同的语法含义。在<code>Parser</code> monad 中，绑定的意思是“尝试匹配第一个解析器，然后再尝试匹配第二个解析器与生育的输入。如果两者其中之一失败那么就失败”。一般情况下绑定在不同的 monad 中会有非常非常大的不同。它旨在作为一种对结构的一般计算方式，因此足以提供所有类型的计算。你可以阅读 monad 的文档来理解他究竟是做什么的。</p>
+<p>下面是经过本节修改后的完整源代码(增加了忽略空白字符的简单解析器)</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">module</span> <span class="title">Main</span> <span class="title">where</span></span></div><div class="line">import <span class="constant">System</span>.<span class="constant">Environment</span></div><div class="line">import <span class="constant">Text</span>.<span class="constant">ParserCombinators</span>.<span class="constant">Parsec</span> hiding (spaces)</div><div class="line"></div><div class="line">main <span class="symbol">:</span><span class="symbol">:</span> <span class="constant">IO</span> ()</div><div class="line">main = <span class="keyword">do</span> args &lt;- getArgs</div><div class="line">          putStrLn(readExpr(args !! <span class="number">0</span>))</div><div class="line"></div><div class="line">symbol <span class="symbol">:</span><span class="symbol">:</span> <span class="constant">Parser</span> <span class="constant">Char</span></div><div class="line">symbol = oneOf <span class="string">"!$%&|*+-/:&lt;=?&gt;@^_~#"</span></div><div class="line"><span class="input"><span class="prompt"></span></span></div><div class="line">readExpr :: String -&gt; <span class="constant">String</span></div><div class="line">readExpr input = <span class="keyword">case</span> parse (spaces <span class="input">&gt;&gt; symbol) <span class="string">"lisp"</span> input of</span></div><div class="line"><span class="input"><span class="prompt">	Left err -&gt;</span> <span class="string">"No match: "</span> ++ show err</span></div><div class="line"><span class="input"><span class="prompt">	Right val -&gt;</span> <span class="string">"Found value"</span></span></div><div class="line"></div><div class="line">spaces <span class="symbol">:</span><span class="symbol">:</span> <span class="constant">Parser</span>()</div><div class="line">spaces = skipMany1 space</div></pre></td></tr></table></figure>
+
+<p>编译并运行这段代码，记住因为我们定义了在<code>skipmany1</code>语句中的 <code>spaces</code>，程序不再像刚才一样识别一个普通的单个符号，而改为了识别一些空白字符的后面的符号。我们用一个简短的例子来看怎么使用：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ghc −package parsec simpleparser2.hs</span></div><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ./simpleparser2 <span class="string">" %"</span> <span class="constant">Found</span> value</span></div><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ./simpleparser2 %</span></div><div class="line"><span class="constant">No</span> match <span class="symbol">:</span> <span class="string">"lisp"</span> (line <span class="number">1</span>, column <span class="number">1</span>) <span class="symbol">:</span></div><div class="line"><span class="input"><span class="prompt">unexpected "%"</span></span></div><div class="line">expecting space</div><div class="line">user&gt;&gt; ./simpleparser2 <span class="string">" abc"</span></div><div class="line"><span class="constant">No</span> match <span class="symbol">:</span> <span class="string">"lisp"</span> (line <span class="number">1</span> , column <span class="number">4</span>) <span class="symbol">:</span></div><div class="line">unexpected <span class="string">"a"</span></div><div class="line">expecting space</div></pre></td></tr></table></figure>
+
+
+    
+    
+    <footer class="meta">
+      
+      
+  <div class="tags">
+<a href="/tags/Scheme-解释器-编译原理-翻译/">Scheme 解释器 编译原理 翻译</a></div>
+
+      
+    </footer>
+    
+  </div>
+  
+</article></div>
+  <footer id="footer" class="inner"><div class="social alignright">
+  
+  
+  
+  
+  <a class="rss" href="/atom.xml" title="RSS">RSS</a>
+</div>
+<p>
+  
+  &copy; 2015 Zhang Xiuyu
+  
+</p>
+<div class="clearfix"></div></footer>
+  <script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+
+<div id="phasebeam">
+  <canvas></canvas>
+  <canvas></canvas>
+  <canvas></canvas>
+</div>
+<script src="/js/phasebeam.js"></script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({"HTML-CSS": { preferredFont: "TeX", availableFonts: ["STIX","TeX"], linebreaks: { automatic:true }, EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) },
+        tex2jax: { inlineMath: [ ["$", "$"], ["\\(","\\)"] ], processEscapes: true, ignoreClass: "tex2jax_ignore|dno",skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']},
+        TeX: {  noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, Macros: { href: "{}" } },
+        messageStyle: "none"
+    }); 
+</script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+</body>
+</html>
