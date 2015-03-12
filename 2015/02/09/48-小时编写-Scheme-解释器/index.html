@@ -48,7 +48,7 @@
     <h1 class="title">48 小时编写 Scheme 解释器</h1>
   
 
-    <time datetime="2015-02-09T02:09:49.000Z">
+    <time datetime="2015-02-09T01:09:49.000Z">
   <span class="day">9</span><span class="month">2月</span>
 </time>
   </header>
@@ -57,7 +57,7 @@
       
         <div id="toc" class="toc-article">
 	<strong class="toc-title">文章目录</strong>
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总览"><span class="toc-number">1.</span> <span class="toc-text">总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一章_-_第一步：_编译和运行"><span class="toc-number">2.</span> <span class="toc-text">第一章 - 第一步： 编译和运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#练习"><span class="toc-number">2.1.</span> <span class="toc-text">练习</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二章_-_语法分析"><span class="toc-number">3.</span> <span class="toc-text">第二章 - 语法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#写一个简单的语法分析器"><span class="toc-number">3.1.</span> <span class="toc-text">写一个简单的语法分析器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空白符"><span class="toc-number">3.2.</span> <span class="toc-text">空白符</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#总览"><span class="toc-number">1.</span> <span class="toc-text">总览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一章_-_第一步：_编译和运行"><span class="toc-number">2.</span> <span class="toc-text">第一章 - 第一步： 编译和运行</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#练习"><span class="toc-number">2.1.</span> <span class="toc-text">练习</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二章_-_语法分析"><span class="toc-number">3.</span> <span class="toc-text">第二章 - 语法分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#写一个简单的语法分析器"><span class="toc-number">3.1.</span> <span class="toc-text">写一个简单的语法分析器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#空白符"><span class="toc-number">3.2.</span> <span class="toc-text">空白符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#返回值"><span class="toc-number">3.3.</span> <span class="toc-text">返回值</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#练习-1"><span class="toc-number">3.4.</span> <span class="toc-text">练习</span></a></li></ol></li></ol>
   </div>
     
       <p>副标题： 通过一个实例介绍 Haskell<br>原作者： Jonathan Tang<br>原链接： <a href="http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours" target="_blank" rel="external">http://en.wikibooks.org/wiki/Write_Yourself_a_Scheme_in_48_Hours</a></p>
@@ -113,7 +113,7 @@
 <td><code>.</code></td>
 <td>9</td>
 <td>右</td>
-<td>符合函数</td>
+<td>函数组合</td>
 </tr>
 <tr>
 <td><code>!!</code></td>
@@ -191,7 +191,7 @@
 <td><code>$</code></td>
 <td>0</td>
 <td>右</td>
-<td>嵌入函数应用程序（和f x类似，但是是右关联而不是左关联）</td>
+<td>嵌入函数应用程序（和<code>f x</code>类似，但是是右关联而不是左关联）</td>
 </tr>
 </tbody>
 </table>
@@ -250,6 +250,76 @@
 <p>编译并运行这段代码，记住因为我们定义了在<code>skipmany1</code>语句中的 <code>spaces</code>，程序不再像刚才一样识别一个普通的单个符号，而改为了识别一些空白字符的后面的符号。我们用一个简短的例子来看怎么使用：</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ghc −package parsec simpleparser2.hs</span></div><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ./simpleparser2 <span class="string">" %"</span> <span class="constant">Found</span> value</span></div><div class="line"><span class="input"><span class="prompt">user&gt;&gt;</span> ./simpleparser2 %</span></div><div class="line"><span class="constant">No</span> match <span class="symbol">:</span> <span class="string">"lisp"</span> (line <span class="number">1</span>, column <span class="number">1</span>) <span class="symbol">:</span></div><div class="line"><span class="input"><span class="prompt">unexpected "%"</span></span></div><div class="line">expecting space</div><div class="line">user&gt;&gt; ./simpleparser2 <span class="string">" abc"</span></div><div class="line"><span class="constant">No</span> match <span class="symbol">:</span> <span class="string">"lisp"</span> (line <span class="number">1</span> , column <span class="number">4</span>) <span class="symbol">:</span></div><div class="line">unexpected <span class="string">"a"</span></div><div class="line">expecting space</div></pre></td></tr></table></figure>
 
+<h3 id="返回值">返回值</h3>
+<p>到现在为止，我们的语法分析器还不能做任何事情——它只能告诉我们输入的字符串是否可以被识别。通常来说，我们希望我们的语法分析器能告诉我们更多东西：我们希望他能把我们的输入转换成可以轻松遍历的数据结构。在这一节中，我们学习如何定义一个数据类型，以及如何修改我们的解释器，让它来返回这个数据类型。</p>
+<p>首先，我们来定义一个可以容纳任何 Lisp 值的数据类型：</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="typedef"><span class="keyword">data</span> <span class="type">LispVal</span> = <span class="type">Atom</span> <span class="type">String</span></span></div><div class="line">             | <span class="type">List</span> [<span class="type">LispVal</span>]</div><div class="line">             | <span class="type">DottedList</span> [<span class="type">LispVal</span>] <span class="type">LispVal</span></div><div class="line">             | <span class="type">Number</span> <span class="type">Integer</span></div><div class="line">             | <span class="type">String</span> <span class="type">String</span></div><div class="line">             | <span class="type">Bool</span> <span class="type">Bool</span></div></pre></td></tr></table></figure>
+
+<p>这是一个代数数据类型的例子：它定义了<code>LispVal</code>可能保存的变量类型的集合。每个 alternative （被称为构造器( constroctors )，被<code>|</code>隔开）包含一个构造器( constroctors )的标签以及构造器可以保存的数据类型。在这个例子中，<code>LispVal</code>可以是：</p>
+<ul>
+<li>原子，储存一个字符串名字叫原子。</li>
+<li>列表，储存一系列的其他<code>LispVal</code>(Haskell用方括号表示)，也被称作一个“专有列表”（proper list）。</li>
+<li>点式列表，表示 Scheme 的形式<code>(a b . c)</code>，也被称作一个“非专有列表”( improper list )。他储存一个列表除了最后一个之外所有的元素，然后储存最后一个元素当作另一个字段。</li>
+<li>数字，储存一个 Haskell 的 Integer。</li>
+<li>字符串，储存一个 Haskell 的 String。</li>
+<li>Bool，储存一个 Haskell 的 布尔值</li>
+</ul>
+<p>构造器( constroctors )和类型( types )有着不同的命名空间（ namespaces ），所以你可以给构造器和类型同时命名为<code>String</code>。类型和构造器的名字永远以大写字母开头。</p>
+<p>接下来，让我们添加更多的解析函数来创建这些类型(types)的值。字符串是一个双引号之后的一系列非双引号字符，然后用一个双引号结尾：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">parseString :: Parser LispVal</div><div class="line">parseString = <span class="operator"><span class="keyword">do</span> <span class="built_in">char</span> <span class="string">'"'</span></span></div><div class="line">                 x &lt;- many (noneOf <span class="string">"\""</span>)</div><div class="line">                 <span class="built_in">char</span> <span class="string">'"'</span></div><div class="line">                 <span class="keyword">return</span> $ <span class="keyword">String</span> x</div></pre></td></tr></table></figure>
+
+<p>我们使用之前的<code>do</code>符号而不是<code>&gt;&gt;</code>操作符。这是因为我们要获取解析的值(由<code>many (noneOf &quot;\&quot;&quot;)</code>返回)并操作它，在此期间会交错一些其他解析操作。通常来说，如果 action 没有返回值则使用操作符<code>&gt;&gt;</code>，如果你要立刻传递值给下一个 action 则使用操作符<code>&gt;&gt;=</code>，否则使用<code>do</code>标记。</p>
+<p>一旦我们从many返回了字符串并结束了语法分析，我们使用字符串构造器(constructor )（<code>LispVal</code>里面的数据类型的）来转换成一个<code>LispVal</code>。每个代数数据类型的构造器还可以作为一个函数把他们的参数转换成一个类型的值。同时还可以作为一个模式，放在模式匹配表达式的左侧。</p>
+<p>我们接着使用内置的函数来提取我们的<code>LispVal</code>到<code>Parser</code> monad。记住，<code>do</code>块的每行必须是相同类型，但是我们字符串构造器的结果只是一个普通(plain old)的<code>LispVal</code>。返回让我们在一个<code>Parser</code> action 里面包起来作为内在值返回，而不是消耗掉。所以，整个<code>parseString</code> action 都有了类型<code>Parser LispVal</code>。（这两句很别扭，原文Return lets us wrap that up in a Parser action that consumes no input but returns it as the inner value. Thus, the whole parseString action will have type Parser LispVal.）</p>
+<p><code>$</code>操作符是中缀函数的应用，这样写和我们写成<code>return (String x)</code>是一样的。但是不同的是，<code>$</code>是右关联的，让我们消除了一些括号。因为<code>$</code>是一个操作符，你可以对他做任何你通常对函数做的事情，比如传递，局部使用等等。在这方面，他的功能像 Lisp 的<code>apply</code>函数。<br>(注：其实<code>$</code>可以看成一个语法糖，在后面的运算优先级更低时可能需要使用括号括起来使其先进行计算，而使用<code>$</code>可以省略掉后面的括号)</p>
+<p>下面，让我们继续处理 Scheme 变量。一个<code>atom</code>是一个字母或符号，后面接着一些字母，数字或符号：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="title">parseAtom</span> :: <span class="type">Parser</span> <span class="type">LispVal</span></div><div class="line"><span class="title">parseAtom</span> = <span class="keyword">do</span> first &lt;- letter &lt;|&gt; symbol </div><div class="line">               rest &lt;- many (letter &lt;|&gt; digit &lt;|&gt; symbol)</div><div class="line">               <span class="keyword">let</span> atom = [first] ++ rest</div><div class="line">               return $ <span class="keyword">case</span> atom <span class="keyword">of</span></div><div class="line">                   <span class="string">"#t"</span> -&gt; <span class="type">Bool</span> <span class="type">True</span></div><div class="line">                   <span class="string">"#f"</span> -&gt; <span class="type">Bool</span> <span class="type">False</span></div><div class="line">                   otherwise -&gt; <span class="type">Atom</span> atom</div></pre></td></tr></table></figure>
+
+<p>这里，让我们介绍另一个 Parsec 连接符，选择操作符<code>&lt;|&gt;</code>。他会尝试使用第一个解析器，如果失败，再使用第二个解析器。如果成功，则返回这个解析器返回的值。第一个解析器在消耗输入之前必须要失败（如果他会失败），稍后我们会看到如何实现回溯。</p>
+<p>在我们读取了第一个字符和剩余的部分之后，我们要把他们放在一起。let语句定义了一个新的变量<code>atom</code>，我们使用列表串联运算符<code>++</code>来做这件事情。首先是一个单字符，所以我们用方括号来将其转换成一个列表来召回。如果我们想创造一个很多元素的列表，我们只需要用都好来分隔他们。</p>
+<p>然后我们用<code>case</code>语句来确定是true还是false，以决定我们创建哪一个<code>LispVal</code>并返回，<code>otherwise</code>相是一个具有可读性的技巧：他的值被忽略，然后我们总是返回atom的值。</p>
+<p>最后，我们再创建一个数字的解析器，这展示了另外一种 monadic 值的处理方式：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">parseNumber :: Parser LispVal</div><div class="line">parseNumber = liftM(Number . <span class="built_in">read</span>) $ many1 digit</div></pre></td></tr></table></figure>
+
+<p>这段代码倒着读最简单，因为同时使用了又关联的函数应用(<code>$</code>操作符)和函数组合(<code>.</code>操作符)。Parsec 的连接符(combinator)<code>many1</code>匹配一个或多个他自己的参数，所以我们在这里匹配一个或多个数字。我们想从生成的字符串中构造一个数字<code>LispVal</code>，但是我们有几个类型不匹配。首先，我们使用内置的函数<code>read</code>来把字符串转换为数字，然后我们将数字传递给<code>Number</code>来获得一个<code>LispVal</code>。函数的组合运算符<code>.</code>创建一个使用它右边参数并传递它的结果给左边参数的函数，所以我们用它来组合两个函数的用途。(so we use that to combine the two function applications)</p>
+<p>不幸的是，<code>many1 digit</code>的结果实际上是一个<code>Parser String</code>，所以我们的复合函数<code>Number . read</code>仍然不能在这里执行。我们需要一种方法来告诉它在 monad 内对值进行操作，给我们返回一个<code>Parser LispVal</code>。标准函数<code>liftM</code>正好是做这个的，所以我们套用<code>liftM</code>给我们的<code>Number . read</code>函数，然后应用这个结果到我们的解析器上。</p>
+<p>我们还必须在顶部导入<code>Monad</code>（注：在现在版本的 Haskell 中应为<code>Control.Monad</code>）模块来访问<code>liftM</code>。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor"><span class="keyword">import</span> Control.Monad</span></div></pre></td></tr></table></figure>
+
+<p>这种编程方式——依赖函数组合、函数应用(function application)和函数之间传递——在 Haskell 代码中很常见。它常常能让你在一行代码中表达非常复杂的算法，在其他函数中组合各种分解的中间步骤。不幸的是，这代表着你需要经常从右向左阅读代码并小心仔细的追踪类型。我们会在教程的剩余部分看到更多的例子，所以我们希望你能对它们更放松。</p>
+<p>让我们来创建一个能接受一个字符串，数字或者 atom 的解析器：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">parseExpr :: Parser LispVal</div><div class="line">parseExpr = parseAtom <span class="tag">&lt;<span class="title">|</span>&gt;</span> parseString <span class="tag">&lt;<span class="title">|</span>&gt;</span> parseNumber</div></pre></td></tr></table></figure>
+
+<p>并修改之前<code>readExpr</code>部分的代码(<code>parse</code>和<code>&quot;lisp&quot;</code>之间):</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">readExpr :: <span class="built_in">String</span> -&gt; <span class="built_in">String</span></div><div class="line">readExpr input = <span class="keyword">case</span> parse parseExpr <span class="string">"lisp"</span> input of</div><div class="line">        <span class="built_in">Left</span> <span class="built_in">err</span> -&gt; <span class="string">"No match: "</span> ++ show <span class="built_in">err</span></div><div class="line">        <span class="built_in">Right</span> val -&gt; <span class="string">"Found value"</span></div></pre></td></tr></table></figure>
+
+<p>完整的代码如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div></pre></td><td class="code"><pre><div class="line">module Main where</div><div class="line">import Control.Monad</div><div class="line">import System.Environment</div><div class="line">import Text.ParserCombinators.Parsec hiding (spaces)</div><div class="line"></div><div class="line">main :: IO ()</div><div class="line">main = <span class="operator"><span class="keyword">do</span> args &lt;- getArgs</span></div><div class="line">          putStrLn(readExpr (args !! <span class="number">0</span>))</div><div class="line"></div><div class="line">symbol :: Parser <span class="built_in">Char</span></div><div class="line">symbol = oneOf <span class="string">"!$%&|*+-/:&lt;=?&gt;@^_~#"</span></div><div class="line"></div><div class="line">readExpr :: <span class="keyword">String</span> -&gt; <span class="keyword">String</span></div><div class="line">readExpr <span class="keyword">input</span> = <span class="keyword">case</span> <span class="keyword">parse</span> parseExpr <span class="string">"lisp"</span> <span class="keyword">input</span> <span class="keyword">of</span></div><div class="line">        <span class="keyword">Left</span> err -&gt; <span class="string">"No match: "</span> ++ <span class="keyword">show</span> err</div><div class="line">        <span class="keyword">Right</span> val -&gt; <span class="string">"Found value"</span></div><div class="line"></div><div class="line">spaces :: Parser()</div><div class="line">spaces = skipMany1 <span class="keyword">space</span></div><div class="line"></div><div class="line"></div><div class="line"><span class="keyword">data</span> LispVal = Atom <span class="keyword">String</span></div><div class="line">             | List [LispVal]</div><div class="line">             | DottedList [LispVal] LispVal</div><div class="line">             | <span class="built_in">Number</span> <span class="built_in">Integer</span></div><div class="line">             | <span class="keyword">String</span> <span class="keyword">String</span></div><div class="line">             | Bool Bool</div><div class="line"></div><div class="line">parseString :: Parser LispVal</div><div class="line">parseString = <span class="keyword">do</span> <span class="built_in">char</span> <span class="string">'"'</span></div><div class="line">                 x &lt;- many (noneOf <span class="string">"\""</span>)</div><div class="line">                 <span class="built_in">char</span> <span class="string">'"'</span></div><div class="line">                 <span class="keyword">return</span> $ <span class="keyword">String</span> x</div><div class="line"></div><div class="line">parseAtom :: Parser LispVal</div><div class="line">parseAtom = <span class="keyword">do</span> <span class="keyword">first</span> &lt;- letter &lt;|&gt; symbol </div><div class="line">               rest &lt;- many (letter &lt;|&gt; digit &lt;|&gt; symbol)</div><div class="line">               let atom = [<span class="keyword">first</span>] ++ rest</div><div class="line">               <span class="keyword">return</span> $ <span class="keyword">case</span> atom <span class="keyword">of</span></div><div class="line">                   <span class="string">"#t"</span> -&gt; Bool <span class="literal">True</span></div><div class="line">                   <span class="string">"#f"</span> -&gt; Bool <span class="literal">False</span></div><div class="line">                   otherwise -&gt; Atom atom</div><div class="line"></div><div class="line">parseNumber :: Parser LispVal</div><div class="line">parseNumber = liftM(<span class="built_in">Number</span> . <span class="keyword">read</span>) $ many1 digit</div><div class="line"></div><div class="line">parseExpr :: Parser LispVal</div><div class="line">parseExpr = parseAtom &lt;|&gt; parseString &lt;|&gt; parseNumber</div></pre></td></tr></table></figure>
+
+<p>编译并执行这段代码，然后在控制台中进行测试：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">user&gt;&gt; ghc −package parsec −o simpleparser datatypeparser.hs</div><div class="line">user&gt;&gt; ./simpleparser <span class="string">"\"this is a string\""</span>       <span class="comment"> //注：在不同平台的控制台下可能会对\"有不同ing理解</span></div><div class="line">Found <span class="built_in">value</span></div><div class="line">user&gt;&gt; ./simpleparser <span class="number">25</span></div><div class="line">Found <span class="built_in">value</span></div><div class="line">user&gt;&gt; ./simpleparser symbol</div><div class="line">Found <span class="built_in">value</span></div><div class="line">user&gt;&gt; ./simpleparser (symbol)</div><div class="line">bash : syntax error near unexpected <span class="keyword">token</span> ‘symbol’</div><div class="line">user&gt;&gt; ./simpleparser <span class="string">"(symbol)"</span></div><div class="line">No match : <span class="string">"lisp"</span> (line1, column <span class="number">1</span>) :</div><div class="line">unexpected <span class="string">"("</span></div><div class="line">expecting letter, <span class="string">"\""</span> <span class="operator">or</span> digit</div></pre></td></tr></table></figure>
+
+<h3 id="练习-1">练习</h3>
+<ol>
+<li><p>重写<code>parseNumber</code>，使用</p>
+<ul>
+<li><code>do</code>标记</li>
+<li>显式的使用<code>&gt;&gt;=</code>操作符</li>
+</ul>
+</li>
+<li><p>我们的<code>String</code>与 R5RS 标准不完全兼容，因为我们不支持字符串内的引号转义。修改<code>parseString</code>使其在遇到<code>\&quot;</code>将其定义为文本的引号字符而不是字符串终结。你可能需要用一个新的parser action 代替<code>noneOf&quot;\&quot;&quot;</code>，使其可以接受一个非引号字符或反斜杠后跟着一个引号。</p>
+</li>
+<li><p>修改前一个练习，让其支持<code>\n</code>、<code>\r</code>、<code>\t</code>、<code>\\</code>和一些其他所需的转义字符。</p>
+</li>
+<li><p>修改<code>parseNumber</code>使其支持<a href="http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.2.4" target="_blank" rel="external">Scheme标准其他进制</a>。<a href="https://www.haskell.org/onlinereport/numeric.html#sect14" target="_blank" rel="external"><code>readOct</code>和<code>readHex</code>函数</a>可能会对你有帮助。</p>
+</li>
+<li><p>给<code>LispVal</code>增加<code>Character</code>的构造器，并且创建一个 R5RS 标准描述的<a href="http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.3.4" target="_blank" rel="external">字符文本</a>的解析器。</p>
+</li>
+<li><p>给<code>LispVal</code>增加<code>Float</code>的构造器，并且创建一个 R5RS 标准描述的<a href="http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.2.4" target="_blank" rel="external">decimals</a>的解析器。<a href="https://www.haskell.org/onlinereport/numeric.html#sect14.2" target="_blank" rel="external">Haskell 函数<code>readFloat</code></a>可能会对你有帮助。</p>
+</li>
+<li><p>添加数据类型和解析器以支持 Scheme 数字类型的<a href="http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.2.1http://www.schemers.org/Documents/Standards/R5RS/HTML/r5rs-Z-H-9.html#%_sec_6.2.1" target="_blank" rel="external">full numerical tower</a>。Haskell 有内建的类型可以表示其中的一部分;检查Prelude。对于其他的部分，你可以定义复合类型表示比如分数(Rational)为一个分子和一个分母，或者一个复数(Complex)为实数部分和虚数部分。</p>
+</li>
+</ol>
 
     
     
@@ -257,7 +327,7 @@
       
       
   <div class="tags">
-<a href="/tags/Scheme-解释器-编译原理-翻译/">Scheme 解释器 编译原理 翻译</a></div>
+<a href="/tags/Scheme-Haskell-解释器-编译原理-翻译/">Scheme Haskell 解释器 编译原理 翻译</a></div>
 
       
     </footer>
